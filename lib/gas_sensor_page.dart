@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'firebase_service.dart';
-import 'dart:math';
+import 'package:firebase_database/firebase_database.dart';
 
 class GasSensorPage extends StatefulWidget {
   const GasSensorPage({Key? key}) : super(key: key);
@@ -10,85 +9,97 @@ class GasSensorPage extends StatefulWidget {
 }
 
 class _GasSensorPageState extends State<GasSensorPage> {
-  final FirebaseService _firebaseService = FirebaseService();
+  double coPPM = 0.0;
+  String alertStatus = "SAFE";
+
+  final DatabaseReference _coRef = FirebaseDatabase.instance.ref('MQ2/CO');
+  final DatabaseReference _alertRef =
+      FirebaseDatabase.instance.ref('MQ2/Alert');
+
+  @override
+  void initState() {
+    super.initState();
+
+    _coRef.onValue.listen((event) {
+      setState(() {
+        coPPM = (event.snapshot.value as num?)?.toDouble() ?? 0.0;
+      });
+    });
+
+    _alertRef.onValue.listen((event) {
+      setState(() {
+        alertStatus = event.snapshot.value?.toString() ?? "SAFE";
+      });
+
+      if (alertStatus == "HIGH CO LEVEL") {
+        _showAlertDialog();
+      }
+    });
+  }
+
+  void _showAlertDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("🚨 Alert"),
+        content: const Text("High Carbon Monoxide Level Detected!"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Dismiss"),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MQ2 Gas Sensor Data'),
-        backgroundColor: Colors.lightGreen,
+        title: const Text("MQ2 Gas Sensor"),
+        backgroundColor: Colors.orange[700],
       ),
       body: Container(
-        color: Colors.lightGreen[50],
         padding: const EdgeInsets.all(16.0),
+        color: Colors.orange[50],
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Real-Time Gas Sensor Readings',
+              "CO Level (PPM)",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "${coPPM.toStringAsFixed(2)} PPM",
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 36,
                 fontWeight: FontWeight.bold,
-                color: Colors.green,
+                color:
+                    alertStatus == "HIGH CO LEVEL" ? Colors.red : Colors.black,
               ),
             ),
             const SizedBox(height: 20),
-            Expanded(
-              child: StreamBuilder<Map<dynamic, dynamic>>(
-                stream: _firebaseService.getGasSensorStream(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text("No data available"));
-                  }
-                  final dataMap = snapshot.data!;
-                  final entries = dataMap.entries.toList();
-
-                  // Sort descending by timestamp
-                  entries.sort((a, b) {
-                    final t1 = a.value['timestamp'] ?? '';
-                    final t2 = b.value['timestamp'] ?? '';
-                    return t2.compareTo(t1);
-                  });
-
-                  return ListView.builder(
-                    itemCount: entries.length,
-                    itemBuilder: (context, index) {
-                      final item = entries[index].value;
-                      final gas = item['gasPPM'] ?? 0;
-                      final time = item['timestamp'] ?? '';
-                      return ListTile(
-                        title: Text("Gas: $gas PPM"),
-                        subtitle: Text(time),
-                      );
-                    },
-                  );
-                },
+            Text(
+              "Status: $alertStatus",
+              style: TextStyle(
+                fontSize: 18,
+                color: alertStatus == "HIGH CO LEVEL"
+                    ? Colors.red
+                    : Colors.green[700],
+                fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[400],
-              ),
-              onPressed: _saveFakeGasReading,
-              child: const Text("Save Random Gas Reading"),
+            const SizedBox(height: 40),
+            Icon(
+              Icons.warning,
+              color: alertStatus == "HIGH CO LEVEL" ? Colors.red : Colors.grey,
+              size: 80,
             ),
           ],
         ),
       ),
-    );
-  }
-
-  /// Simulates a random gas reading and saves it
-  Future<void> _saveFakeGasReading() async {
-    final rand = Random();
-    final fakeGas = 300 + rand.nextDouble() * 200; // e.g. 300-500 PPM
-
-    // Save to Firebase
-    await _firebaseService.saveGasReading(fakeGas);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Random gas reading saved!")),
     );
   }
 }

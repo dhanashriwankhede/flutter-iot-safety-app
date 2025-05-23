@@ -49,7 +49,7 @@ class _GraphPageState extends State<GraphPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('DHT11 Graph'),
+        title: const Text('DHT22 Graph'),
         backgroundColor: Colors.lightGreen,
       ),
       body: Container(

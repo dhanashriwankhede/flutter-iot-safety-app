@@ -3,33 +3,57 @@ import 'package:firebase_database/firebase_database.dart';
 class FirebaseService {
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
 
-  /// Stream DHT11 data from "DHT11" node
   Stream<Map<String, double>> getSensorStream() {
-    return _dbRef.child('DHT11').onValue.map((event) {
-      final data = event.snapshot.value as Map?;
-      if (data != null) {
-        final temp = (data['Temperature'] ?? 0).toDouble();
-        final hum = (data['Humidity'] ?? 0).toDouble();
-        return {'temperature': temp, 'humidity': hum};
+    return _dbRef.onValue.map((event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+
+      final temperature = data?['DHT22']?['Temperature'] ?? 0.0;
+      final humidity = data?['DHT22']?['Humidity'] ?? 0.0;
+      final coPPM = data?['MQ2']?['CO'] ?? 0.0;
+
+      return {
+        'temperature': (temperature is num) ? temperature.toDouble() : 0.0,
+        'humidity': (humidity is num) ? humidity.toDouble() : 0.0,
+        'co_ppm': (coPPM is num) ? coPPM.toDouble() : 0.0,
+      };
+    });
+  }
+
+  Stream<String> getMQ2AlertStream() {
+    return _dbRef.child('MQ2/Alert').onValue.map((event) {
+      final data = event.snapshot.value;
+      return data != null ? data.toString() : "SAFE";
+    });
+  }
+
+// This listens to the CO ppm value in Firebase
+  Stream<double> getCOStream() {
+    return _dbRef.child('MQ2').child('CO').onValue.map((event) {
+      final value = event.snapshot.value;
+      if (value != null) {
+        return double.tryParse(value.toString()) ?? 0.0;
+      } else {
+        return 0.0;
       }
-      return {'temperature': 0.0, 'humidity': 0.0};
     });
   }
 
-  /// Save gas sensor data to "MQ2" node
-  Future<void> saveGasReading(double gasPPM) async {
-    String? newKey = _dbRef.child('MQ2').push().key;
-    await _dbRef.child('MQ2/$newKey').set({
-      'gasPPM': gasPPM,
-      'timestamp': DateTime.now().toIso8601String(),
-    });
-  }
+  Stream<List<Map<String, dynamic>>> getMQ2HistoryStream() {
+    return _dbRef.child("MQ2/Readings").onValue.map((event) {
+      final readings = <Map<String, dynamic>>[];
 
-  /// Stream gas sensor data from "MQ2" node
-  Stream<Map<dynamic, dynamic>> getGasSensorStream() {
-    return _dbRef.child('MQ2').onValue.map((event) {
-      if (event.snapshot.value == null) return {};
-      return event.snapshot.value as Map<dynamic, dynamic>;
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+
+      data?.forEach((key, value) {
+        final entry = value as Map<dynamic, dynamic>;
+        readings.add({
+          'timestamp': key,
+          'value': entry['value'] ?? 0.0,
+        });
+      });
+
+      readings.sort((a, b) => a['timestamp'].compareTo(b['timestamp']));
+      return readings;
     });
   }
 }
