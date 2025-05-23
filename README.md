@@ -48,14 +48,14 @@ A real-time Flutter IoT monitoring app for military tents deployed in extreme en
 +--> \[ESP8266 / NodeMCU] --> \[Firebase Realtime DB] --> \[Flutter App]
 
 
-## 📷 Screenshots 
-![WhatsApp Image 2025-04-24 at 07 53 42 (1)](https://github.com/user-attachments/assets/876abb53-6cd2-4063-a979-9d181ca787fa)
+## 📷 Screenshots
+![alert_notification](https://github.com/user-attachments/assets/8209e59f-0b2f-4f30-b2f6-664bdbf90b90)
+![sensor_dashboard](https://github.com/user-attachments/assets/d23bc385-0d64-42a0-91a1-74d5f9d9ef53)
+![drawer_navigation](https://github.com/user-attachments/assets/5763d302-658e-4616-a56c-2e5897edfd72)
+![DHT22_real-time-graph](https://github.com/user-attachments/assets/f2074c95-b7eb-4e51-b869-5abd41c2ada4)
 
-![WhatsApp Image 2025-04-24 at 07 53 43 (2)](https://github.com/user-attachments/assets/f50caac9-5c35-4c3c-94cb-0fce27d52b0a)
+![CO_level_alert_page](https://github.com/user-attachments/assets/e32443ec-269f-45e0-b595-e35ff8525761)
 
----![WhatsApp Image 2025-04-24 at 07 53 43 (1)](https://github.com/user-attachments/assets/1c93875e-ad63-4bd3-ac39-96d85ae6b058)
-![WhatsApp Image 2025-04-24 at 07 53 43](https://github.com/user-attachments/assets/fbfaa3ad-0ea9-4fa1-a1a4-11b699654b44)
-![WhatsApp Image 2025-04-24 at 07 53 42](https://github.com/user-attachments/assets/0b7319a2-84fe-472d-875a-2e2cee478797)
 
 
 ## 🔒 Security Notes
