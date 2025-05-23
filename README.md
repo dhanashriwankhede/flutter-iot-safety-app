@@ -49,10 +49,14 @@ A real-time Flutter IoT monitoring app for military tents deployed in extreme en
 
 
 ## 📷 Screenshots 
+![WhatsApp Image 2025-04-24 at 07 53 42 (1)](https://github.com/user-attachments/assets/876abb53-6cd2-4063-a979-9d181ca787fa)
 
+![WhatsApp Image 2025-04-24 at 07 53 43 (2)](https://github.com/user-attachments/assets/f50caac9-5c35-4c3c-94cb-0fce27d52b0a)
 
+---![WhatsApp Image 2025-04-24 at 07 53 43 (1)](https://github.com/user-attachments/assets/1c93875e-ad63-4bd3-ac39-96d85ae6b058)
+![WhatsApp Image 2025-04-24 at 07 53 43](https://github.com/user-attachments/assets/fbfaa3ad-0ea9-4fa1-a1a4-11b699654b44)
+![WhatsApp Image 2025-04-24 at 07 53 42](https://github.com/user-attachments/assets/0b7319a2-84fe-472d-875a-2e2cee478797)
 
----
 
 ## 🔒 Security Notes
 
@@ -66,9 +70,4 @@ A real-time Flutter IoT monitoring app for military tents deployed in extreme en
 ✅ Working prototype for academic and demo purposes.
 🔧 Future improvements may include local data caching, enhanced graph filtering, and secure production Firebase rules.
 
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
 
